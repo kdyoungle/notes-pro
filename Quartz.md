@@ -11,8 +11,62 @@
 假如你的应用中有需要在某个特定的时间点执行的任务,或者说你的系统中有重复的维护工作,使用`Quartz`确实是一个不错的方案.
 
 * 工作流的驱动管理(**指定时间点执行的任务**):假设创建了一个新的订单,我们需要准确的在两个小时以后执行一项任务,这项任务的内容是:检查订单的状态,如果该订单还没有接收到确认信息,那么将订单的状态修改为"尚未确认,等待介入",并且出发一次警告通知.
+
 * 系统维护(**重复的工作**):在每个工作日(除节假日以外的所有工作日)的晚上11:30,将数据库的内容转储到XML文件中.
+
 * 在应用中使用定时提醒的服务等.
+
+## 二   使用步骤：
+
+  在spring boot项目中使用为例：
+### 必须步骤：
+1. 在pom.xml中添加依赖：
+
+   ```
+     <dependency>
+         <groupId>org.quartz-scheduler</groupId>
+         <artifactId>quartz</artifactId>
+         <version>2.3.0</version>
+     </dependency>
+     <dependency>
+         <groupId>org.quartz-scheduler</groupId>
+         <artifactId>quartz-jobs</artifactId>
+         <version>2.3.0</version>
+     </dependency> 
+   ```
+
+2. 创建一个`QuartzJob`类，该类必须实现`Job`接口
+
+  该类执行具体的任务
+
+3. 构建任务，主要的API
+  - JobDetail  创建关于QuartzJob的具体实例
+  - TriggetDetail  创建一个触发器实例
+4. 创建调度器实例 quartzScheduler
+5. 绑定任务，执行
+
+### 其他必须的API
+- JobExecutionContext
+- JobDataMap
+- TriggerDataMap
+- JobDataMap
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
