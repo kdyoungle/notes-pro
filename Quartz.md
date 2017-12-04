@@ -28,41 +28,187 @@
          <artifactId>quartz</artifactId>
          <version>2.3.0</version>
      </dependency>
-     <dependency>
-         <groupId>org.quartz-scheduler</groupId>
-         <artifactId>quartz-jobs</artifactId>
-         <version>2.3.0</version>
-     </dependency> 
    ```
 
 2. 创建一个`QuartzJob`类，该类必须实现`Job`接口
 
-  该类执行具体的任务
+  覆写`Job`接口中的`execute(JobExecutionContext context)`方法,该类执行具体的任务
+
+  ```java
+  package com.common.test.quartz.job;
+
+  import org.quartz.Job;
+  import org.quartz.JobExecutionContext;
+  import org.quartz.JobExecutionException;
+
+  import java.text.SimpleDateFormat;
+  import java.util.Date;
+
+  /**
+   * @author yangle
+   * @date 2017/11/21
+   */
+  public class QuartzJob implements Job {
+      @Override
+      public void execute(JobExecutionContext context) throws JobExecutionException {
+          Date now = new Date();
+          SimpleDateFormat sdf = new SimpleDateFormat("MM-dd HH:mm:ss");
+          System.out.println(sdf.format(now));
+      }
+  }
+  ```
+
+  ​
 
 3. 构建任务，主要的API
   - JobDetail  创建关于QuartzJob的具体实例
-  - TriggetDetail  创建一个触发器实例
+
+    ```java
+    JobDetail jobDetail = JobBuilder.newJob(QuartzJob.class)
+                    .withIdentity("first", "group-first")
+                    .build();
+    ```
+
+    ​
+
+  - Trigger  创建一个触发器实例
+
+    ```java
+    Trigger trigger = TriggerBuilder.newTrigger()
+                    .startNow()
+                    .withIdentity("trigger-one", "group-first")
+                    .withSchedule(SimpleScheduleBuilder.repeatSecondlyForever(10))
+                    .build();
+    ```
+
+    ​
+
 4. 创建调度器实例 quartzScheduler
+
+   ```java
+    SchedulerFactory factory = new StdSchedulerFactory();
+    Scheduler quartzScheduler = factory.getScheduler();
+   ```
+
+   或者
+
+   ```java
+    Scheduler quartzScheduler = StdSchedulerFactory.getDefaultScheduler();
+   ```
+
 5. 绑定任务，执行
 
-### 其他必须的API
+   ```java
+   quartzScheduler.scheduleJob(jobDetail, trigger);
+   ```
+
+
+### 其他常用的API
 - JobExecutionContext
 - JobDataMap
 - TriggerDataMap
-- JobDataMap
+## 三   配置文件 `quartz.properties`
+
+### (一)  配置文件的路径
+
+*   默认的配置文件路径:jar包下org/quartz/quartz.properties
+
+
+*   自定义的配置文件路径:项目根路径下
+
+### (二) 常用的配置项
+
+```
+    #quartz实例的名称,同一集群环境下的instanceName必须一致
+    org.quartz.scheduler.instanceName=quartz
+    #区别不同的quartz实例
+    org.quartz.scheduler.instanceId=AUTO
+    #将需要执行的任务持久化存储至数据库
+    org.quartz.jobStore.class=org.quartz.impl.jdbcjobstore.JobStoreTX
+    #JDBC代理
+    org.quartz.jobStore.driverDelegateClass=org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+    #标识一套完整的数据库连接配置
+    org.quartz.jobStore.dataSource=DB
+    #假如使用所在应用的连接池,此处配置对应的jndi
+    #org.quartz.dataSource.DB.jndiURL=${jndiName}
+    #quartz任务相关表的前缀
+    org.quartz.jobStore.tablePrefix=QRTZ_
+    #quartz运行在集群环境下
+    org.quartz.jobStore.isClustered=true
+    #检测集群环境下的各quartz实例的时间间隔
+    org.quartz.jobStore.clusterCheckinInterval=20000
+```
+
+## 四   quartz与spring boot的整合
+
+在实际的应用中,我们通常需要使用spring中的service或者repository来协助我们实现一些任务功能,但是目前我们如果只是简单的使用`@Autowired` 或者其他相关注解注入实例的话,是会报错的,为解决这个问题,我们需要做一些定制化的事情.
+
+1.  添加依赖
+
+    ```
+    <dependency>
+       <groupId>org.springframework</groupId>
+       <artifactId>spring-context-support</artifactId>
+       <version>4.3.10.RELEASE</version>
+    </dependency>
+    ```
+
+2.  重写一个新的jobFactory
+
+    ```java
+    @Component
+    public class MyJobFactory extends AdaptableJobFactory{
+
+        @Autowired
+        private AutowireCapableBeanFactory capableBeanFactory;
+
+        @Override
+        protected Object createJobInstance(TriggerFiredBundle bundle) throws Exception {
+            //调用父类的方法
+            Object jobInstance = super.createJobInstance(bundle);
+            //进行注入
+            capableBeanFactory.autowireBean(jobInstance);
+            return jobInstance;
+        }
+    }
+    ```
+
+3.  将新的jobFactory配置到quartz.properties中
+
+    ```
+    org.quartz.scheduler.jobFactory.class=${MyJobFactory的全路径名}
+    ```
 
 
 
+## 五  监听器
+
+相关API
+
+*   JobListener
+*   TriggerListener
+*   SchedulerListener
+*   ListenerManager
+
+
+quartz任务扫描频率
 
 
 
-
-
-
-
-
-
-
+```
+bss
+{
+    "success": true,
+    "code": 100000,
+    "msg": "处理成功!",
+    "data": {
+        "count": 1,
+        "rows": [
+            "192.168.102.190:7209"
+        ]
+    }
+}
+```
 
 
 
