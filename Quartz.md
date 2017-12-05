@@ -209,6 +209,36 @@ bss
     }
 }
 ```
+## 六 一些推荐做法
+
+### （一）Production System Tips
+
+#### skip update check
+
+目前quartz包含有一个”更新检测“的特性，它可以在线检测是否可用的新版本供下载。这样的检查异步执行，并且不会影响quartz的运行和初始化，而且连接服务器失败的情况下，他是不会执行的。
+
+你可以通过在Quartz的属性配置：“org.quartz.scheduler.skipUpdateCheck=true”或者系统属性“org.terracotta.quartz.skipUpdateCheck=true”（which you can set in your system environment or as
+a -D on the java command line）来禁用掉这个特性，而且这也是推荐的做法。
+
+### （二）JobDataMap Tips
+
+#### 1. 在JobDataMap中仅存储基本类型的数据类型（包括对应的封装类和java.lang.String）
+
+在JobDataMap存储基本数据类型及对应封装类或者String可以避免出现序列话的错误
+
+#### 2. 使用 Merged JobDataMap
+
+`Merged JobDataMap`可以通过JobExecutionContext的实例获取（getMergedJobDataMap（））方法，它合并了分别存储在JobDetail和Trigger上的JobDataMap,如果两个JobDataMap中存在相同的key值，则取最新的一次更新。
+
+如果你处理的job绑定了多个触发器triggers，并且每个独立的触发器trigger需要给Job提供不同的数据，这样的情况下，将JobDataMap存储在对应的Trigger中可能效果更好。
+
+综合上述情况，推荐的做法是：在Job的execute()方法中，应该使用JobExecutionContext.getMergedJobDataMap()方法获得JobDataMap,而不建议分别从jobDetail和Trigger中获取对应的JobDataMap。
+
+
+
+
+
+
 
 
 
