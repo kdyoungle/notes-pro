@@ -191,25 +191,26 @@
 *   ListenerManager
 
 
-quartz任务扫描频率
+## 六  quartz定时任务的实现原理
+
+[quartz实现原理](https://www.cnblogs.com/yangyudexiaobai/p/4422665.html)：
+
+[quartz应用详解](http://www.cnblogs.com/langtianya/archive/2013/05/15/3079109.html)
+
+涉及的主要类：
+
+- QuartzScheduler
+
+
+- QuartzSchedulerThread
+
+- QuartzSchedulerMBeanImpl  run()方法
+
+  ​
 
 
 
-```
-bss
-{
-    "success": true,
-    "code": 100000,
-    "msg": "处理成功!",
-    "data": {
-        "count": 1,
-        "rows": [
-            "192.168.102.190:7209"
-        ]
-    }
-}
-```
-## 六 一些推荐做法
+## 七 一些推荐做法
 
 ### （一）Production System Tips
 
