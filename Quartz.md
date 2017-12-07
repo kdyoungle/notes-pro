@@ -186,33 +186,16 @@
 相关API
 
 *   JobListener
+
 *   TriggerListener
+
 *   SchedulerListener
+
 *   ListenerManager
-
-
-quartz任务扫描频率
-
-
-
-```
-bss
-{
-    "success": true,
-    "code": 100000,
-    "msg": "处理成功!",
-    "data": {
-        "count": 1,
-        "rows": [
-            "192.168.102.190:7209"
-        ]
-    }
-}
-```
+## 六  触发器(Trigger)的状态
 
 
 
 
 
-
-
+## 七  quartz运行机制
