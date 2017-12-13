@@ -106,7 +106,6 @@
 ### 其他常用的API
 - JobExecutionContext
 - JobDataMap
-- TriggerDataMap
 ## 三   配置文件 `quartz.properties`
 
 ### (一)  配置文件的路径
@@ -236,3 +235,15 @@ a -D on the java command line）来禁用掉这个特性，而且这也是推荐
 综合上述情况，推荐的做法是：在Job的execute()方法中，应该使用JobExecutionContext.getMergedJobDataMap()方法获得JobDataMap,而不建议分别从jobDetail和Trigger中获取对应的JobDataMap。
 
 ## 八  触发器(Trigger)的状态
+
+
+
+## 九  开发过程中遇到的问题及解决方法 
+
+### 1. 手动触发任务时,需要获取触发人员的详细信息用于记录
+
+**难点:**如何在job实现类(java普通类)中获取session等网络请求参数?
+
+**解决方法:**手动触发任务使用`triggerJob(JobKey jobKey,JobDataMap,jobDataMap)`方法
+
+将session或者session中的具体参数存储在jobDataMap中传递到job实现类中
