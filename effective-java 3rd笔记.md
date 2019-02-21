@@ -3,6 +3,8 @@
 ### Item 2: 在面对多个构造函数时, 考虑使用构造器(builder)
 ### Item 3: 使用私有构造函数和枚举类型实现单例属性
 ### Item 4: 
+### Item 9: try-with-resources优于try-finally
+关闭类似文件流的操作时使用try-with-resources语句块, 使用该语句块时要求待关闭的对象是实现AutoCloseable接口的一个实例
 ## Chapter 3: 对象的通用方法
 ## Chapter 4: 类和接口
 ### Item 15: 尽量减少类和成员的可访问级别
@@ -22,7 +24,10 @@
 - 确保对任何可变组件的独占访问
 ### Item 18: 优先使用复合而不是继承
 在同一个包中使用继承是安全的, 因为是由同一个程序员进行控制; 专门设计出来用于扩展且有详细的文档的类, 使用继承也是安全的.
+
 decoration模式;
+### Item 19: 使用继承时, 父类必须有良好的设计并且有对应文档 否则应该禁止使用
+
 ## Chapter 5: 泛型
 ## Chapter 6: 枚举和注解
 ## Chapter 7: lambda表达式和流(Lambdas and Stream)
